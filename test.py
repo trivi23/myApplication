@@ -202,7 +202,7 @@ def m_top():
         entries[8].delete(0, END)
         entries[9].delete(0, END)
         entries[10].delete(0, END)
-        l2.config(text="Insertion success...!")
+        l.config(text="Insertion success...!")
         connect.commit()
         connect.close()
 
@@ -235,13 +235,13 @@ def m_top():
         entries[8].delete(0, END)
         entries[9].delete(0, END)
         entries[10].delete(0, END)
-        l2.config(text="Updated...!")
+        l.config(text="Updated...!")
         connect.commit()
         connect.close()
     bInsert = Button(top, text="Insert", command=insert)
-    bInsert.grid(row=13, column=1)
+    bInsert.grid(row=13, column=1,padx=10)
     bUpdate = Button(top, text="update", command=update_entries)
-    bUpdate.grid(row=14, column=1)
+    bUpdate.grid(row=14, column=2,padx=20)
     l = Label(top, text="")
     l.grid(row=15, column=1)
 
@@ -264,6 +264,45 @@ def delete():
     l2.config(text="Delete success...!")
     connect.commit()
     connect.close()
+
+# GETTING DETAILS
+def get():
+    ls1 = ["Personal Details : ","Name : ","Father's Name : ","Contact : ","Company Name : ","MARKS : ","Python : ","Java : ","DBMS : ","Computer Networks : ","Aptitude : "]
+    ls2 = [" ","Roll Number : ", "Course : ","Company id : ","Position : "," ","C Programming :","Data structures :","Operating Systems :","Verbal : ","Maths : "]
+    connect = sqlite3.connect('my.db')
+    crsr = connect.cursor()
+    crsr.execute("""select * from student WHERE roll_number = :roll""",{'roll':entri.get()})
+    c = crsr.fetchall()
+    crsr.execute("""select * from marks WHERE roll = :roll""",
+                 {'roll': entri.get()})
+    b = crsr.fetchall()
+    crsr.execute("""select * from company WHERE roll = :roll""",
+                 {'roll': entri.get()})
+    a = crsr.fetchall()
+    d = [" ",c[0][1]+" "+c[0][2], c[0][3],c[0][5],a[0][2]," ",b[0][1],b[0][3],b[0][5],b[0][7],b[0][9]]
+    g = [" ", c[0][0], c[0][4], a[0][1],a[0][3], " ", b[0][2], b[0][4], b[0][6], b[0][8], b[0][10]]
+    connect.close()
+    top = Toplevel(window)
+    top.geometry("900x900")
+    top.resizable(width=0, height=0)
+    for i in range(len(ls1)):
+        l = Label(top, text=ls1[i])
+        l.grid(row=i, column=1, padx=5, pady=20)
+    for k in range(len(d)):
+        l = Label(top, text=d[k])
+        l.grid(row=k, column=2, padx=5, pady=20)
+    for j in range(len(ls2)):
+        l = Label(top, text=ls2[j])
+        l.grid(row=j, column=3, padx=5, pady=20)
+    for s in range(len(g)):
+        l = Label(top, text=g[s])
+        l.grid(row=s, column=4, padx=5, pady=20)
+
+def get1():
+    try:
+        get()
+    except :
+        l2.config(text="Record Doesnot exists")
 
 # For prediction
 def prediction():
@@ -319,15 +358,17 @@ mButton = Button(bLabel,text="Marks", command=m_top)
 mButton.pack()
 cButton = Button(bLabel,text="Company", command=c_top)
 cButton.pack()
-# Deleting details
+# Deleting  and getting details
 dLabel = LabelFrame(window,text="Delete Records : ")
 dLabel.pack(fill="both", expand="yes")
-dButton = Button(dLabel,text="delete",command=delete)
-dButton.pack()
 deletel = Label(dLabel,text="Enter Roll Number")
 deletel.pack()
 entri = Entry(dLabel)
 entri.pack()
+dButton = Button(dLabel, text="Delete", command=delete)
+dButton.pack(padx=10,pady=10)
+gButton = Button(dLabel,text="Get Details",command=get1)
+gButton.pack(padx=10,pady=10)
 l2 = Label(dLabel,text="")
 l2.pack()
 # Prediction
